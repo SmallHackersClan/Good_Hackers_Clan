@@ -2,63 +2,93 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>HACKER GATEWAY</title>
+    <title>CLAN_GATEWAY_v2</title>
     <style>
         body { background: #050505; color: #39ff14; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        #gateway { border: 2px solid #39ff14; padding: 40px; border-radius: 15px; background: rgba(0, 255, 0, 0.05); box-shadow: 0 0 30px rgba(0, 255, 0, 0.3); text-align: center; max-width: 500px; width: 90%; }
+        /* Экран входа */
+        #login-screen { text-align: center; border: 2px solid #39ff14; padding: 50px; background: rgba(0,20,0,0.8); box-shadow: 0 0 50px #003300; border-radius: 15px; }
         
-        .logo { font-size: 30px; font-weight: bold; margin-bottom: 30px; letter-spacing: 3px; text-shadow: 0 0 10px #39ff14; }
+        /* Пространство Шлюза (скрыто в начале) */
+        #hq-space { display: none; width: 95%; height: 90vh; border: 3px double #39ff14; background: #000; padding: 20px; position: relative; flex-direction: column; }
+
+        /* Охрана */
+        .guard { position: absolute; font-size: 12px; color: #f00; text-shadow: 0 0 5px #f00; }
+        #guard-alpha { top: 20px; left: 20px; }
+        #guard-beta { top: 20px; right: 20px; }
+        #motion-sensor { bottom: 20px; right: 20px; color: #ff0; }
+
+        /* Консоль Командира */
+        #console { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; border-bottom: 1px solid #333; padding: 10px; font-size: 14px; }
+        #command-line { background: #000; border: 1px solid #39ff14; color: #39ff14; width: 100%; padding: 10px; outline: none; font-family: inherit; }
         
-        .menu-btn { display: block; border: 1px solid #39ff14; padding: 15px; margin: 15px 0; text-decoration: none; color: #39ff14; font-weight: bold; transition: 0.3s; cursor: pointer; background: none; width: 100%; font-family: inherit; font-size: 16px; }
-        
-        .menu-btn:hover { background: #39ff14; color: #000; box-shadow: 0 0 20px #39ff14; transform: scale(1.02); }
-        
-        .status { font-size: 12px; margin-top: 20px; color: #888; text-transform: uppercase; }
-        
-        /* Эффект печатающегося текста */
-        .typing { overflow: hidden; border-right: .15em solid #39ff14; white-space: nowrap; margin: 0 auto; letter-spacing: .15em; animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite; }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #39ff14; } }
+        .btn { border: 1px solid #39ff14; padding: 15px; color: #39ff14; cursor: pointer; background: none; font-family: inherit; margin: 10px; }
+        .btn:hover { background: #39ff14; color: #000; }
     </style>
 </head>
 <body>
 
-<div id="gateway">
-    <div class="logo">
-        <div class="typing">> ACCESS_GATEWAY_V1.0 <</div>
+    <!-- ЭКРАН 1: ВХОД -->
+    <div id="login-screen">
+        <h2>> ВНИМАНИЕ: ЗОНА ОГРАНИЧЕННОГО ДОСТУПА <</h2>
+        <button class="btn" onclick="checkGate()">ПРОЙТИ ИДЕНТИФИКАЦИЮ (PASS 1337)</button>
     </div>
 
-    <!-- Кнопка 1: Регистрация -->
-    <button class="menu-btn" onclick="register()">[ 01 ] ЗАРЕГИСТРИРОВАТЬ ХАКЕРА</button>
-    
-    <!-- Кнопка 2: Вход -->
-    <button class="menu-btn" onclick="login()">[ 02 ] ВОЙТИ В ШЛЮЗ (LOGIN)</button>
-    
-    <!-- Кнопка 3: Обучение -->
-    <a href="https://code.org" target="_blank" class="menu-btn">[ 03 ] ПРОЙТИ ОБУЧЕНИЕ (ACADEMY)</a>
+    <!-- ЭКРАН 2: ШЛЮЗ -->
+    <div id="hq-space">
+        <!-- ОХРАНА -->
+        <div class="guard" id="guard-alpha">[ ОХРАНА: АЛЬФА ]<br>Статус: НА СВЯЗИ<br>Оружие: ГОТОВНОСТЬ</div>
+        <div class="guard" id="guard-beta">[ ОХРАНА: БЕТА ]<br>Статус: СКАНЕР ВКЛЮЧЕН<br>Оружие: ГОТОВНОСТЬ</div>
+        <div class="guard" id="motion-sensor">[ ДАТЧИК ДВИЖЕНИЯ ]<br>Активность: НИЗКАЯ</div>
 
-    <div class="status">System Status: Waiting for Authorization...</div>
-</div>
+        <h1 style="text-align: center; font-size: 20px;">ЦЕНТРАЛЬНЫЙ ШЛЮЗ КОМАНДИРА</h1>
+        
+        <div id="console">
+            <div>[ СИСТЕМА ] Доступ подтвержден. Приветствуем, Командир.</div>
+            <div>[ СИСТЕМА ] Охрана заняла позиции. Шлюз заблокирован для посторонних.</div>
+        </div>
 
-<script>
-    function register() {
-        let name = prompt("Введите ваш хакерский псевдоним (NICKNAME):");
-        if (name) {
-            alert("ЗАПРОС ОТПРАВЛЕН: Хакер " + name + " добавлен в очередь на проверку модераторами клана.");
+        <input type="text" id="command-line" placeholder="Введите команду (например: status, alert, clear)..." onkeydown="runCommand(event)">
+    </div>
+
+    <script>
+        function checkGate() {
+            let pass = prompt("ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ:");
+            if(pass === "1337") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('hq-space').style.display = 'flex';
+            } else {
+                alert("ОШИБКА ДОСТУПА! СИГНАЛИЗАЦИЯ ВКЛЮЧЕНА!");
+            }
         }
-    }
 
-    function login() {
-        let pass = prompt("ВВЕДИТЕ КЛЮЧ ДОСТУПА:");
-        if (pass === "1337") {
-            alert("ДОСТУП РАЗРЕШЕН. Добро пожаловать в шлюз, Белый Хакер.");
-            // Тут можно перенаправить на другую страницу или открыть секретный контент
-        } else {
-            alert("ОШИБКА: КЛЮЧ НЕВЕРЕН. СИСТЕМА ЗАБЛОКИРОВАНА.");
+        function runCommand(e) {
+            if (e.key === "Enter") {
+                let cmd = document.getElementById('command-line').value.toLowerCase();
+                let consoleDiv = document.getElementById('console');
+                let newLine = document.createElement('div');
+                
+                if(cmd === "status") {
+                    newLine.innerHTML = "<span style='color: #fff;'>[ CMD ] Система: 100%. Охрана: Лояльна. Печеньки: Закончились.</span>";
+                } else if (cmd === "alert") {
+                    newLine.innerHTML = "<span style='color: #f00;'>[ ALERT ] ТРЕВОГА! ВСЕМ ПОДНЯТЬСЯ ПО СИГНАЛУ!</span>";
+                    document.body.style.backgroundColor = "#200";
+                    setTimeout(() => document.body.style.backgroundColor = "#050505", 500);
+                } else if (cmd === "clear") {
+                    consoleDiv.innerHTML = "";
+                    newLine.innerHTML = "[ CMD ] Консоль очищена.";
+                } else {
+                    newLine.innerHTML = "[ CMD ] Команда '" + cmd + "' не распознана.";
+                }
+                
+                consoleDiv.appendChild(newLine);
+                document.getElementById('command-line').value = "";
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            }
         }
-    }
-</script>
+    </script>
+</body>
+</html>
 
 </body>
 </html>
