@@ -2,93 +2,101 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CLAN_GATEWAY_v2</title>
+    <title>HACKER_FORTRESS_v3</title>
     <style>
-        body { background: #050505; color: #39ff14; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        body { background: #020202; color: #39ff14; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
         /* Экран входа */
-        #login-screen { text-align: center; border: 2px solid #39ff14; padding: 50px; background: rgba(0,20,0,0.8); box-shadow: 0 0 50px #003300; border-radius: 15px; }
+        #login-screen { text-align: center; border: 4px double #39ff14; padding: 60px; background: #000; box-shadow: 0 0 40px #005500; z-index: 100; }
         
-        /* Пространство Шлюза (скрыто в начале) */
-        #hq-space { display: none; width: 95%; height: 90vh; border: 3px double #39ff14; background: #000; padding: 20px; position: relative; flex-direction: column; }
+        /* ГЛАВНЫЙ БУНКЕР (ШЛЮЗ) */
+        #hq-space { display: none; width: 98vw; height: 95vh; background: #050505; border: 2px solid #111; position: relative; flex-direction: column; box-sizing: border-box; }
 
-        /* Охрана */
-        .guard { position: absolute; font-size: 12px; color: #f00; text-shadow: 0 0 5px #f00; }
-        #guard-alpha { top: 20px; left: 20px; }
-        #guard-beta { top: 20px; right: 20px; }
-        #motion-sensor { bottom: 20px; right: 20px; color: #ff0; }
+        /* ТРИ СЛОЯ ОХРАНЫ */
+        .layer { position: absolute; border: 1px dashed rgba(57, 255, 20, 0.2); pointer-events: none; }
+        #layer-1 { top: 5%; left: 5%; right: 5%; bottom: 5%; border-color: #555; } /* Внешний мир */
+        #layer-2 { top: 15%; left: 15%; right: 15%; bottom: 15%; border-color: #f00; border-style: double; } /* Лазеры */
+        #layer-3 { top: 25%; left: 25%; right: 25%; bottom: 25%; border-color: #39ff14; } /* Элита */
+
+        /* Охранники по периметру */
+        .guard-post { position: absolute; font-size: 11px; background: #000; padding: 5px; border: 1px solid currentColor; z-index: 10; }
+        .g-red { color: #f00; }
+        .g-green { color: #39ff14; }
+        .g-blue { color: #00f; }
 
         /* Консоль Командира */
-        #console { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; border-bottom: 1px solid #333; padding: 10px; font-size: 14px; }
-        #command-line { background: #000; border: 1px solid #39ff14; color: #39ff14; width: 100%; padding: 10px; outline: none; font-family: inherit; }
+        #main-ui { position: relative; z-index: 20; display: flex; flex-direction: column; height: 100%; padding: 40px; box-sizing: border-box; }
+        #console-output { flex-grow: 1; overflow-y: auto; background: rgba(0,20,0,0.3); border: 1px solid #111; padding: 20px; font-size: 14px; margin-bottom: 20px; }
+        #cmd-input { background: #000; border: 2px solid #39ff14; color: #39ff14; padding: 15px; width: 100%; outline: none; font-size: 16px; font-family: inherit; box-sizing: border-box; }
         
-        .btn { border: 1px solid #39ff14; padding: 15px; color: #39ff14; cursor: pointer; background: none; font-family: inherit; margin: 10px; }
-        .btn:hover { background: #39ff14; color: #000; }
+        .btn { border: 2px solid #39ff14; padding: 20px 40px; color: #39ff14; cursor: pointer; background: none; font-size: 20px; font-family: inherit; }
+        .btn:hover { background: #39ff14; color: #000; box-shadow: 0 0 30px #39ff14; }
     </style>
 </head>
 <body>
 
-    <!-- ЭКРАН 1: ВХОД -->
     <div id="login-screen">
-        <h2>> ВНИМАНИЕ: ЗОНА ОГРАНИЧЕННОГО ДОСТУПА <</h2>
-        <button class="btn" onclick="checkGate()">ПРОЙТИ ИДЕНТИФИКАЦИЮ (PASS 1337)</button>
+        <h1>[ СИСТЕМА ЗАБЛОКИРОВАНА ]</h1>
+        <p>ТРЕБУЕТСЯ КЛЮЧ БЕЛОГО ХАКЕРА</p>
+        <button class="btn" onclick="openFortress()">ВВЕСТИ КЛЮЧ (1337)</button>
     </div>
 
-    <!-- ЭКРАН 2: ШЛЮЗ -->
     <div id="hq-space">
-        <!-- ОХРАНА -->
-        <div class="guard" id="guard-alpha">[ ОХРАНА: АЛЬФА ]<br>Статус: НА СВЯЗИ<br>Оружие: ГОТОВНОСТЬ</div>
-        <div class="guard" id="guard-beta">[ ОХРАНА: БЕТА ]<br>Статус: СКАНЕР ВКЛЮЧЕН<br>Оружие: ГОТОВНОСТЬ</div>
-        <div class="guard" id="motion-sensor">[ ДАТЧИК ДВИЖЕНИЯ ]<br>Активность: НИЗКАЯ</div>
+        <!-- СЛОИ ЗАЩИТЫ -->
+        <div class="layer" id="layer-1"></div>
+        <div class="layer" id="layer-2"></div>
+        <div class="layer" id="layer-3"></div>
 
-        <h1 style="text-align: center; font-size: 20px;">ЦЕНТРАЛЬНЫЙ ШЛЮЗ КОМАНДИРА</h1>
-        
-        <div id="console">
-            <div>[ СИСТЕМА ] Доступ подтвержден. Приветствуем, Командир.</div>
-            <div>[ СИСТЕМА ] Охрана заняла позиции. Шлюз заблокирован для посторонних.</div>
+        <!-- ПОСТЫ ОХРАНЫ -->
+        <div class="guard-post g-blue" style="top:2%; left:2%;">[ОХРАНА 1: ВНЕШНИЙ ПЕРИМЕТР - ACTIVE]</div>
+        <div class="guard-post g-red" style="top:12%; right:12%;">[ОХРАНА 2: ЛАЗЕРНАЯ СЕТКА - ARMED]</div>
+        <div class="guard-post g-green" style="bottom:22%; left:22%;">[ОХРАНА 3: СПЕЦНАЗ КЛАНА - READY]</div>
+
+        <div id="main-ui">
+            <h2 style="text-align:center; color:#fff; text-shadow: 0 0 10px #39ff14;">ЦЕНТРАЛЬНЫЙ ТЕРМИНАЛ КОМАНДИРА</h2>
+            
+            <div id="console-output">
+                <div>[SYSTEM] Инициализация защиты... OK</div>
+                <div>[SYSTEM] Слой 1: Чисто. Слой 2: Под напряжением. Слой 3: Ожидание приказов.</div>
+                <div>[SYSTEM] Командир, шлюз расширен. Введите команду 'help' для списка действий.</div>
+            </div>
+
+            <input type="text" id="cmd-input" placeholder="Введите приказ..." onkeydown="processCmd(event)" autofocus>
         </div>
-
-        <input type="text" id="command-line" placeholder="Введите команду (например: status, alert, clear)..." onkeydown="runCommand(event)">
     </div>
 
     <script>
-        function checkGate() {
-            let pass = prompt("ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ:");
-            if(pass === "1337") {
+        function openFortress() {
+            let p = prompt("КЛЮЧ ДОСТУПА:");
+            if(p === "1337") {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('hq-space').style.display = 'flex';
-            } else {
-                alert("ОШИБКА ДОСТУПА! СИГНАЛИЗАЦИЯ ВКЛЮЧЕНА!");
-            }
+                log("Доступ подтвержден. Добро пожаловать домой.");
+            } else { alert("ОТКАЗАНО В ДОСТУПЕ. СИСТЕМА УНИЧТОЖИТ ДАННЫЕ."); }
         }
 
-        function runCommand(e) {
+        function log(msg) {
+            let out = document.getElementById('console-output');
+            out.innerHTML += "<div>> " + msg + "</div>";
+            out.scrollTop = out.scrollHeight;
+        }
+
+        function processCmd(e) {
             if (e.key === "Enter") {
-                let cmd = document.getElementById('command-line').value.toLowerCase();
-                let consoleDiv = document.getElementById('console');
-                let newLine = document.createElement('div');
-                
-                if(cmd === "status") {
-                    newLine.innerHTML = "<span style='color: #fff;'>[ CMD ] Система: 100%. Охрана: Лояльна. Печеньки: Закончились.</span>";
-                } else if (cmd === "alert") {
-                    newLine.innerHTML = "<span style='color: #f00;'>[ ALERT ] ТРЕВОГА! ВСЕМ ПОДНЯТЬСЯ ПО СИГНАЛУ!</span>";
-                    document.body.style.backgroundColor = "#200";
-                    setTimeout(() => document.body.style.backgroundColor = "#050505", 500);
-                } else if (cmd === "clear") {
-                    consoleDiv.innerHTML = "";
-                    newLine.innerHTML = "[ CMD ] Консоль очищена.";
-                } else {
-                    newLine.innerHTML = "[ CMD ] Команда '" + cmd + "' не распознана.";
+                let val = e.target.value.toLowerCase();
+                if(val === "help") log("Команды: status, alert, scan, clear, layer1_off (для своих)");
+                else if(val === "status") log("Слои 1,2,3 в норме. Нарушителей: 0. Папа в комнату не заходил.");
+                else if(val === "scan") log("Сканирую сеть... Обнаружено 1 устройство: Твой мощный комп.");
+                else if(val === "alert") {
+                    log("ТРЕВОГА! ЛАЗЕРЫ ВКЛЮЧЕНЫ!");
+                    document.body.style.boxShadow = "inset 0 0 100px #f00";
+                    setTimeout(()=>document.body.style.boxShadow="none", 1000);
                 }
-                
-                consoleDiv.appendChild(newLine);
-                document.getElementById('command-line').value = "";
-                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                else if(val === "clear") document.getElementById('console-output').innerHTML = "";
+                else log("Неизвестный приказ: " + val);
+                e.target.value = "";
             }
         }
     </script>
-</body>
-</html>
-
 </body>
 </html>
