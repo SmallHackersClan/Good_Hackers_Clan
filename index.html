@@ -2,52 +2,63 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>CLAN HACKERS HUB</title>
+    <title>HACKER GATEWAY</title>
     <style>
-        body { background-color: #050505; color: #39ff14; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; padding: 40px; margin: 0; }
-        .glitch { font-size: 45px; font-weight: bold; text-shadow: 0 0 10px #39ff14; margin-bottom: 20px; }
+        body { background: #050505; color: #39ff14; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        /* Главная рамка */
-        .main-box { border: 2px solid #39ff14; padding: 30px; border-radius: 15px; background: rgba(0, 255, 0, 0.05); box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); text-align: center; width: 90%; max-width: 700px; }
+        #gateway { border: 2px solid #39ff14; padding: 40px; border-radius: 15px; background: rgba(0, 255, 0, 0.05); box-shadow: 0 0 30px rgba(0, 255, 0, 0.3); text-align: center; max-width: 500px; width: 90%; }
         
-        /* Кнопки инструментов */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
-        .tool-btn { border: 1px solid #39ff14; padding: 15px; text-decoration: none; color: #39ff14; font-size: 14px; transition: 0.3s; }
-        .tool-btn:hover { background: #39ff14; color: #000; box-shadow: 0 0 15px #39ff14; transform: translateY(-3px); }
-
-        /* Секретный раздел */
-        .secret-input { margin-top: 30px; background: none; border: none; border-bottom: 1px solid #39ff14; color: #39ff14; outline: none; text-align: center; font-family: inherit; }
+        .logo { font-size: 30px; font-weight: bold; margin-bottom: 30px; letter-spacing: 3px; text-shadow: 0 0 10px #39ff14; }
+        
+        .menu-btn { display: block; border: 1px solid #39ff14; padding: 15px; margin: 15px 0; text-decoration: none; color: #39ff14; font-weight: bold; transition: 0.3s; cursor: pointer; background: none; width: 100%; font-family: inherit; font-size: 16px; }
+        
+        .menu-btn:hover { background: #39ff14; color: #000; box-shadow: 0 0 20px #39ff14; transform: scale(1.02); }
+        
+        .status { font-size: 12px; margin-top: 20px; color: #888; text-transform: uppercase; }
+        
+        /* Эффект печатающегося текста */
+        .typing { overflow: hidden; border-right: .15em solid #39ff14; white-space: nowrap; margin: 0 auto; letter-spacing: .15em; animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #39ff14; } }
     </style>
 </head>
 <body>
 
-    <div class="glitch">> CLAN_HACKERS <</div>
-
-    <div class="main-box">
-        <p>МЫ ТЕ, КТО СТРОИТ БУДУЩЕЕ.</p>
-        <p style="color: #fff;">[ СИСТЕМА: <span id="status">ONLINE</span> ]</p>
-        
-        <div class="grid">
-            <a href="https://www.virustotal.com" target="_blank" class="tool-btn">АНТИВИРУС (ONLINE)</a>
-            <a href="https://haveibeenpwned.com" target="_blank" class="tool-btn">УТЕЧКИ ПАРОЛЕЙ</a>
-            <a href="https://code.org" target="_blank" class="tool-btn">УРОКИ КОДИНГА</a>
-            <a href="https://github.com" target="_blank" class="tool-btn">БАЗА ЗНАНИЙ</a>
-        </div>
-
-        <br>
-        <input type="password" class="secret-input" placeholder="Введите пароль клана..." onchange="checkPass(this.value)">
+<div id="gateway">
+    <div class="logo">
+        <div class="typing">> ACCESS_GATEWAY_V1.0 <</div>
     </div>
 
-    <script>
-        function checkPass(val) {
-            if(val === "1337") {
-                alert("ДОСТУП РАЗРЕШЕН: Наша цель — стать лучшими белыми хакерами!");
-            } else {
-                alert("ДОСТУП ЗАПРЕЩЕН!");
-            }
+    <!-- Кнопка 1: Регистрация -->
+    <button class="menu-btn" onclick="register()">[ 01 ] ЗАРЕГИСТРИРОВАТЬ ХАКЕРА</button>
+    
+    <!-- Кнопка 2: Вход -->
+    <button class="menu-btn" onclick="login()">[ 02 ] ВОЙТИ В ШЛЮЗ (LOGIN)</button>
+    
+    <!-- Кнопка 3: Обучение -->
+    <a href="https://code.org" target="_blank" class="menu-btn">[ 03 ] ПРОЙТИ ОБУЧЕНИЕ (ACADEMY)</a>
+
+    <div class="status">System Status: Waiting for Authorization...</div>
+</div>
+
+<script>
+    function register() {
+        let name = prompt("Введите ваш хакерский псевдоним (NICKNAME):");
+        if (name) {
+            alert("ЗАПРОС ОТПРАВЛЕН: Хакер " + name + " добавлен в очередь на проверку модераторами клана.");
         }
-    </script>
+    }
+
+    function login() {
+        let pass = prompt("ВВЕДИТЕ КЛЮЧ ДОСТУПА:");
+        if (pass === "1337") {
+            alert("ДОСТУП РАЗРЕШЕН. Добро пожаловать в шлюз, Белый Хакер.");
+            // Тут можно перенаправить на другую страницу или открыть секретный контент
+        } else {
+            alert("ОШИБКА: КЛЮЧ НЕВЕРЕН. СИСТЕМА ЗАБЛОКИРОВАНА.");
+        }
+    }
+</script>
 
 </body>
 </html>
-
