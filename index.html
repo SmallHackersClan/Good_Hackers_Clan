@@ -2,99 +2,101 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>HACKER_FORTRESS_v3</title>
+    <title>SECURE_HACKER_FORTRESS</title>
     <style>
         body { background: #020202; color: #39ff14; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        /* Экран входа */
-        #login-screen { text-align: center; border: 4px double #39ff14; padding: 60px; background: #000; box-shadow: 0 0 40px #005500; z-index: 100; }
-        
+        /* ЭКРАН 1: СКАНЕР СЕТЧАТКИ */
+        #retina-scan { text-align: center; border: 2px solid #39ff14; padding: 40px; background: #000; box-shadow: 0 0 30px #005500; }
+        .eye-scanner { width: 200px; height: 100px; border: 3px solid #39ff14; border-radius: 50% 50%; margin: 20px auto; position: relative; overflow: hidden; }
+        .laser-line { width: 100%; height: 2px; background: #f00; position: absolute; top: 0; left: 0; box-shadow: 0 0 10px #f00; animation: scan 2s infinite ease-in-out; display: none; }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        /* ЭКРАН 2: ЦИФРОВОЙ КОД */
+        #keycard-screen { display: none; text-align: center; border: 2px solid #00f; padding: 40px; background: #000; box-shadow: 0 0 30px #0000ff; }
+        .code-input { background: #000; border: 1px solid #00f; color: #00f; padding: 10px; font-size: 24px; letter-spacing: 5px; text-align: center; width: 300px; outline: none; }
+
         /* ГЛАВНЫЙ БУНКЕР (ШЛЮЗ) */
-        #hq-space { display: none; width: 98vw; height: 95vh; background: #050505; border: 2px solid #111; position: relative; flex-direction: column; box-sizing: border-box; }
-
-        /* ТРИ СЛОЯ ОХРАНЫ */
-        .layer { position: absolute; border: 1px dashed rgba(57, 255, 20, 0.2); pointer-events: none; }
-        #layer-1 { top: 5%; left: 5%; right: 5%; bottom: 5%; border-color: #555; } /* Внешний мир */
-        #layer-2 { top: 15%; left: 15%; right: 15%; bottom: 15%; border-color: #f00; border-style: double; } /* Лазеры */
-        #layer-3 { top: 25%; left: 25%; right: 25%; bottom: 25%; border-color: #39ff14; } /* Элита */
-
-        /* Охранники по периметру */
-        .guard-post { position: absolute; font-size: 11px; background: #000; padding: 5px; border: 1px solid currentColor; z-index: 10; }
-        .g-red { color: #f00; }
-        .g-green { color: #39ff14; }
-        .g-blue { color: #00f; }
-
-        /* Консоль Командира */
-        #main-ui { position: relative; z-index: 20; display: flex; flex-direction: column; height: 100%; padding: 40px; box-sizing: border-box; }
-        #console-output { flex-grow: 1; overflow-y: auto; background: rgba(0,20,0,0.3); border: 1px solid #111; padding: 20px; font-size: 14px; margin-bottom: 20px; }
-        #cmd-input { background: #000; border: 2px solid #39ff14; color: #39ff14; padding: 15px; width: 100%; outline: none; font-size: 16px; font-family: inherit; box-sizing: border-box; }
+        #hq-space { display: none; width: 98vw; height: 95vh; background: #050505; border: 2px solid #111; position: relative; flex-direction: column; padding: 40px; box-sizing: border-box; }
+        .guard-post { position: absolute; font-size: 11px; padding: 5px; border: 1px solid currentColor; z-index: 10; }
         
-        .btn { border: 2px solid #39ff14; padding: 20px 40px; color: #39ff14; cursor: pointer; background: none; font-size: 20px; font-family: inherit; }
-        .btn:hover { background: #39ff14; color: #000; box-shadow: 0 0 30px #39ff14; }
+        #console-output { flex-grow: 1; overflow-y: auto; background: rgba(0,20,0,0.1); border: 1px solid #111; padding: 20px; font-size: 14px; margin-bottom: 20px; }
+        #cmd-input { background: #000; border: 2px solid #39ff14; color: #39ff14; padding: 15px; width: 100%; outline: none; font-size: 16px; font-family: inherit; box-sizing: border-box; }
+
+        .btn { border: 2px solid currentColor; padding: 15px 30px; color: inherit; cursor: pointer; background: none; font-family: inherit; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <h1>[ СИСТЕМА ЗАБЛОКИРОВАНА ]</h1>
-        <p>ТРЕБУЕТСЯ КЛЮЧ БЕЛОГО ХАКЕРА</p>
-        <button class="btn" onclick="openFortress()">ВВЕСТИ КЛЮЧ (1337)</button>
+    <!-- ШАГ 1: СЕТЧАТКА -->
+    <div id="retina-scan">
+        <h2>[ SCANNING RETINA ]</h2>
+        <div class="eye-scanner">
+            <div class="laser-line" id="laser"></div>
+            <div style="width: 40px; height: 40px; background: #39ff14; border-radius: 50%; margin: 30px auto; opacity: 0.5;"></div>
+        </div>
+        <p id="scan-text">ПРИЛОЖИТЕ ГЛАЗ К СКАНЕРУ</p>
+        <button class="btn" style="color: #39ff14;" onclick="startScan()">НАЧАТЬ СКАНИРОВАНИЕ</button>
     </div>
 
+    <!-- ШАГ 2: 10-ЗНАЧНЫЙ КОД -->
+    <div id="keycard-screen">
+        <h2 style="color: #00f;">[ KEYCARD AUTHENTICATION ]</h2>
+        <p style="color: #00f;">ВВЕДИТЕ 10-ЗНАЧНЫЙ КОД ДОСТУПА:</p>
+        <input type="text" class="code-input" id="digit-code" maxlength="10" placeholder="0000000000">
+        <br>
+        <button class="btn" style="color: #00f;" onclick="checkCode()">ПОДТВЕРДИТЬ КЛЮЧ</button>
+        <p style="font-size: 10px; color: #555; margin-top: 10px;">ПОДСКАЗКА: 1234567890</p>
+    </div>
+
+    <!-- ШАГ 3: БУНКЕР -->
     <div id="hq-space">
-        <!-- СЛОИ ЗАЩИТЫ -->
-        <div class="layer" id="layer-1"></div>
-        <div class="layer" id="layer-2"></div>
-        <div class="layer" id="layer-3"></div>
+        <div class="guard-post" style="top:2%; left:2%; color: #00f;">[ СЛОЙ 1: ВНЕШНИЙ ПЕРИМЕТР ]</div>
+        <div class="guard-post" style="top:2%; right:2%; color: #f00;">[ СЛОЙ 2: ЛАЗЕРНАЯ ЗАЩИТА ]</div>
+        <div class="guard-post" style="bottom:20%; left:2%; color: #39ff14;">[ СЛОЙ 3: ЭЛИТНЫЙ СПЕЦНАЗ ]</div>
 
-        <!-- ПОСТЫ ОХРАНЫ -->
-        <div class="guard-post g-blue" style="top:2%; left:2%;">[ОХРАНА 1: ВНЕШНИЙ ПЕРИМЕТР - ACTIVE]</div>
-        <div class="guard-post g-red" style="top:12%; right:12%;">[ОХРАНА 2: ЛАЗЕРНАЯ СЕТКА - ARMED]</div>
-        <div class="guard-post g-green" style="bottom:22%; left:22%;">[ОХРАНА 3: СПЕЦНАЗ КЛАНА - READY]</div>
-
-        <div id="main-ui">
-            <h2 style="text-align:center; color:#fff; text-shadow: 0 0 10px #39ff14;">ЦЕНТРАЛЬНЫЙ ТЕРМИНАЛ КОМАНДИРА</h2>
-            
-            <div id="console-output">
-                <div>[SYSTEM] Инициализация защиты... OK</div>
-                <div>[SYSTEM] Слой 1: Чисто. Слой 2: Под напряжением. Слой 3: Ожидание приказов.</div>
-                <div>[SYSTEM] Командир, шлюз расширен. Введите команду 'help' для списка действий.</div>
-            </div>
-
-            <input type="text" id="cmd-input" placeholder="Введите приказ..." onkeydown="processCmd(event)" autofocus>
+        <h2 style="text-align:center;">ЦЕНТРАЛЬНЫЙ ТЕРМИНАЛ КОМАНДИРА</h2>
+        <div id="console-output">
+            <div>[SYSTEM] Сетчатка подтверждена. Ключ-карта принята.</div>
+            <div>[SYSTEM] Охрана на позициях. Три слоя защиты активированы.</div>
         </div>
+        <input type="text" id="cmd-input" placeholder="Командуйте, Командир..." onkeydown="processCmd(event)">
     </div>
 
     <script>
-        function openFortress() {
-            let p = prompt("КЛЮЧ ДОСТУПА:");
-            if(p === "1337") {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('hq-space').style.display = 'flex';
-                log("Доступ подтвержден. Добро пожаловать домой.");
-            } else { alert("ОТКАЗАНО В ДОСТУПЕ. СИСТЕМА УНИЧТОЖИТ ДАННЫЕ."); }
+        function startScan() {
+            document.getElementById('laser').style.display = 'block';
+            document.getElementById('scan-text').innerText = "ИДЕТ СКАНИРОВАНИЕ...";
+            setTimeout(() => {
+                document.getElementById('retina-scan').style.display = 'none';
+                document.getElementById('keycard-screen').style.display = 'block';
+            }, 3000);
         }
 
-        function log(msg) {
-            let out = document.getElementById('console-output');
-            out.innerHTML += "<div>> " + msg + "</div>";
-            out.scrollTop = out.scrollHeight;
+        function checkCode() {
+            let code = document.getElementById('digit-code').value;
+            if(code === "1234567890") {
+                document.getElementById('keycard-screen').style.display = 'none';
+                document.getElementById('hq-space').style.display = 'flex';
+            } else {
+                alert("ОШИБКА: КОД НЕВЕРЕН! СИСТЕМА БЛОКИРУЕТСЯ!");
+                location.reload();
+            }
         }
 
         function processCmd(e) {
             if (e.key === "Enter") {
                 let val = e.target.value.toLowerCase();
-                if(val === "help") log("Команды: status, alert, scan, clear, layer1_off (для своих)");
-                else if(val === "status") log("Слои 1,2,3 в норме. Нарушителей: 0. Папа в комнату не заходил.");
-                else if(val === "scan") log("Сканирую сеть... Обнаружено 1 устройство: Твой мощный комп.");
+                let out = document.getElementById('console-output');
+                if(val === "status") out.innerHTML += "<div>> Оборона: 100%. Все слои активны.</div>";
                 else if(val === "alert") {
-                    log("ТРЕВОГА! ЛАЗЕРЫ ВКЛЮЧЕНЫ!");
+                    out.innerHTML += "<div style='color:red'>> ТРЕВОГА ВКЛЮЧЕНА! ОХРАНА, В РУЖЬЕ!</div>";
                     document.body.style.boxShadow = "inset 0 0 100px #f00";
                     setTimeout(()=>document.body.style.boxShadow="none", 1000);
                 }
-                else if(val === "clear") document.getElementById('console-output').innerHTML = "";
-                else log("Неизвестный приказ: " + val);
+                else out.innerHTML += "<div>> Выполняю: " + val + "...</div>";
                 e.target.value = "";
+                out.scrollTop = out.scrollHeight;
             }
         }
     </script>
